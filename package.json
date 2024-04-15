@@ -15,6 +15,10 @@
     "mongoose": "^8.3.1",
     "morgan": "~1.9.1",
     "nodemon": "^3.1.0",
+<<<<<<< Updated upstream
     "uid2": "^1.0.0"
+=======
+    "react-native-fbsdk": "^3.0.0"
+>>>>>>> Stashed changes
   }
 }
