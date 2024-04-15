@@ -1,13 +1,25 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const { options } = require("../routes/updates");
 
-
-const annonceSchema = mongoose.Schema({
- title:String,
- description: String,
- hebergeur: Boolean,
- 
+const optionSchema = mongoose.Schema({
+  city: String,
+  accommodationType: String,
+  duration: String,
+  smoke: Boolean,
+  animals: Boolean,
+  visit: Boolean,
+  car: Boolean,
+  pool: Boolean,
+  prmAccess: Boolean,
 });
 
-const Annonce = mongoose.model('annonces', userSchema);
+const annonceSchema = mongoose.Schema({
+  options: optionSchema,
+  title: String,
+  description: String,
+  hebergeur: Boolean,
+});
 
-module.exports = User;
+const Annonce = mongoose.model("annonces", annonceSchema);
+
+module.exports = Annonce;
