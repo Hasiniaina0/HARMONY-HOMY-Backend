@@ -8,21 +8,30 @@ const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["username", "password"])) {
+  if (!checkBody(req.body, ["nom", "prenom","email","numPhone","password"])) {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   }
 
+   // Check if password and confirmPassword match
+   if (req.body.password !== req.body.confirmPassword) {
+    res.json({ result: false, error: "Passwords do not match" });
+    return;
+  }
+
   // Check if the user has not already been registered
-  User.findOne({ username: req.body.username }).then((data) => {
+  User.findOne({ nom: req.body.nom }).then((data) => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
       const newUser = new User({
-        username: req.body.username,
+        nom: req.body.nom,
+        prenom: req.body.prenom,
+        email: req.body.email,
+        numPhone: req.body.numPhone,
         password: hash,
+        confirmPassword:hash,
         token: uid2(32),
-        canBookmark: true,
       });
 
       newUser.save().then((newDoc) => {
@@ -36,12 +45,12 @@ router.post("/signup", (req, res) => {
 });
 
 router.post("/signin", (req, res) => {
-  if (!checkBody(req.body, ["username", "password"])) {
+  if (!checkBody(req.body, ["email", "password"])) {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   }
 
-  User.findOne({ username: req.body.username }).then((data) => {
+  User.findOne({ email: req.body.email }).then((data) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, token: data.token });
     } else {

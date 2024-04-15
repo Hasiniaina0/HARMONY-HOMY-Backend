@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const { token } = require("morgan");
 
 const userSchema = mongoose.Schema({
-  name: String,
-  firstname: String,
+  nom: String,
+  prenom: String,
   dateNaissance: Date,
   email: String,
-  phoneNumber: Number,
+  numPhone: Number,
   token: String,
   password: String,
   aPropos: String,
