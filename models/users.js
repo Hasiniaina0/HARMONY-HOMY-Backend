@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-const { token } = require("morgan");
 
 const optionSchema = mongoose.Schema({
-  city: String,
+  citySearch: String,
   accommodationType: String,
   duration: String,
   smoke: Boolean,
@@ -11,10 +10,11 @@ const optionSchema = mongoose.Schema({
   car: Boolean,
   pool: Boolean,
   prmAccess: Boolean,
+  garden: Boolean,
 });
 
 const userSchema = mongoose.Schema({
-  option: optionSchema,
+  options: optionSchema,
   nom: String,
   prenom: String,
   dateNaissance: Date,
