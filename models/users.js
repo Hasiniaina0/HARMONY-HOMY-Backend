@@ -11,6 +11,7 @@ const optionSchema = mongoose.Schema({
   pool: Boolean,
   prmAccess: Boolean,
   garden: Boolean,
+  balcon: Boolean,
 });
 
 const userSchema = mongoose.Schema({
