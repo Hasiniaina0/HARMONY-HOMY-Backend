@@ -78,4 +78,49 @@ router.post("/signin", (req, res) => {
     }
   });
 });
+
+router.get("/hebergeur", async (req, res) => {
+  // Utilisez une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
+  User.find({ statut: "hebergeur" })
+    .select({
+      prenom: 1,
+      city: 1,
+      description: 1,
+      aPropos: 1,
+      dateNaissance: 1,
+      photo: 1,
+    })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Erreur lors de la récupération des hébergeurs" });
+    });
+});
+
+router.get("/locataire", async (req, res) => {
+  // Utilisez une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
+  User.find({ statut: "locataire" })
+    .select({
+      prenom: 1,
+      city: 1,
+      description: 1,
+      aPropos: 1,
+      dateNaissance: 1,
+      photo: 1,
+    })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((error) => {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Erreur lors de la récupération des locataires" });
+    });
+});
+
 module.exports = router;
