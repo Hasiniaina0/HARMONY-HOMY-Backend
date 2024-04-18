@@ -123,4 +123,27 @@ router.get("/locataire", async (req, res) => {
     });
 });
 
+// Route pour récupérer les informations de l'utilisateur par ID
+router.get("/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ message: "Utilisateur non trouvé" });
+    }
+    // Retourner uniquement les informations nécessaires de l'utilisateur
+    const data = {
+      prenom: user.prenom,
+      description: user.description,
+      aPropos: user.aPropos,
+      
+    };
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res.json({ message: "Erreur lors de la récupération des informations de l'utilisateur" });
+  }
+});
+
 module.exports = router;
