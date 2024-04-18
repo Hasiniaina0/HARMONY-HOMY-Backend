@@ -5,18 +5,38 @@ const bcrypt = require("bcrypt");
 
 require("../models/connection");
 
+const uniqid = require("uniqid");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
+
+// envoyer les photos sur cloudinary
+router.post("/photos", async (req, res) => {
+  res.json({ result: true, files: req.files });
+  // for (const photo of req.files.photoFromFront) {
+  //   const photoPath = `./tmp/${uniqid()}.jpg`;
+  //   const resultMove = await photo.mv(photoPath);
+
+  //   if (!resultMove) {
+  //     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+  //     res.json({
+  //       result: true,
+  //       uri: resultCloudinary.secure_url,
+  //     });
+  //   } else {
+  //     res.json({ result: false, error: resultMove });
+  //   }
+  //   fs.unlinkSync(photoPath);
+  // }
+});
+
 router.put("/information", (req, res) => {
-  const { nom, prenom, email, numPhone, password } = req.body;
+  const { userId, email, numPhone, password } = req.body;
   const hash = password ? bcrypt.hashSync(req.body.password, 10) : undefined;
 
   // Rechercher l'utilisateur dans la base de données par son nom et prénom
   User.findOneAndUpdate(
-    { nom, prenom }, // Critère de recherche
-    {
-      email,
-      numPhone,
-      password: hash,
-    }, // Nouvelles valeurs à mettre à jour
+    userId,
+    { email, numPhone, password: hash }, // Nouvelles valeurs à mettre à jour
     { new: true } // Option pour retourner le document mis à jour
   )
     .then((user) => {
@@ -47,19 +67,19 @@ router.put("/information", (req, res) => {
 });
 
 router.put("/profil", (req, res) => {
-  const { nom, prenom, city, aPropos, description } = req.body;
+  const { userId, city, aPropos, description, numPhone, password, email } =
+    req.body;
 
   // Mettre à jour les champs localisation, à propos et description pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    { nom, prenom }, // Critère de mise à jour
-    { city, aPropos, description }, // Nouvelles valeurs à mettre à jour
+    userId,
+    { city, aPropos, description, numPhone, password, email }, // Nouvelles valeurs à mettre à jour
     { new: true } // Option pour retourner le document mis à jour
   )
     .then((user) => {
       if (!user) {
         console.error(
-          "Erreur lors de la mise à jour du profil de l'utilisateur :",
-          err
+          "Erreur lors de la mise à jour du profil de l'utilisateur :"
         );
         return res
           .status(500)

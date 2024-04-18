@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
   aPropos: String,
   description: String,
   statut: String,
-  photo: String,
+  photos: String,
   city: String,
 });
 
