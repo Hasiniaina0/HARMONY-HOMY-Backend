@@ -131,8 +131,7 @@ router.put("/profil", (req, res) => {
 });
 router.put("/options", (req, res) => {
   const {
-    nom,
-    prenom,
+    userId,
     city,
     accommodationType,
     duration,
@@ -146,7 +145,7 @@ router.put("/options", (req, res) => {
 
   // Mettre à jour les champs pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    { nom: nom, prenom: prenom }, // Critère de mise à jour
+    { _id: userId }, // Critère de mise à jour
     {
       city,
       accommodationType,
