@@ -72,7 +72,7 @@ router.put("/profil", (req, res) => {
 
   // Mettre à jour les champs localisation, à propos et description pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    userId,
+    { _id: userId },
     { city, aPropos, description, numPhone, password, email }, // Nouvelles valeurs à mettre à jour
     { new: true } // Option pour retourner le document mis à jour
   )
@@ -101,8 +101,7 @@ router.put("/profil", (req, res) => {
 });
 router.put("/options", (req, res) => {
   const {
-    nom,
-    prenom,
+    userId,
     city,
     accommodationType,
     duration,
@@ -116,7 +115,7 @@ router.put("/options", (req, res) => {
 
   // Mettre à jour les champs pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    { nom: nom, prenom: prenom }, // Critère de mise à jour
+    { _id: userId }, // Critère de mise à jour
     {
       city,
       accommodationType,
