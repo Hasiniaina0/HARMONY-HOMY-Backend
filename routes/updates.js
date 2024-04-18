@@ -10,32 +10,62 @@ const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 
 // envoyer les photos sur cloudinary
-router.post("/photos", async (req, res) => {
-  res.json({ result: true, files: req.files });
-  // for (const photo of req.files.photoFromFront) {
-  //   const photoPath = `./tmp/${uniqid()}.jpg`;
-  //   const resultMove = await photo.mv(photoPath);
 
-  //   if (!resultMove) {
-  //     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-  //     res.json({
-  //       result: true,
-  //       uri: resultCloudinary.secure_url,
-  //     });
-  //   } else {
-  //     res.json({ result: false, error: resultMove });
-  //   }
-  //   fs.unlinkSync(photoPath);
-  // }
+router.post("/photos/:token", async (req, res) => {
+  console.log(req.files);
+  const files = req.files;
+  const photos = [];
+  for (const photo in files) {
+    console.log("photo:", photo);
+    const photoPath = `./tmp/${uniqid()}.jpg`;
+    const resultMove = await files[photo].mv(photoPath);
+
+    if (!resultMove) {
+      const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+      photos.push(resultCloudinary.secure_url);
+      User.findOneAndUpdate(
+        { token: req.params.token },
+        { photos }, // Nouvelles valeurs à mettre à jour
+        { new: true } // Option pour retourner le document mis à jour
+      )
+        .then((user) => {
+          if (!user) {
+            console.error(
+              "Erreur lors de la mise à jour des photos de l'utilisateur : utilisateur non trouvé"
+            );
+            return res
+              .status(500)
+              .send(
+                "Erreur lors de la mise à jour des photos de l'utilisateur: utilisateur non trouvé"
+              );
+          }
+
+          // Répondre avec un statut de réussite
+          res.status(200).json(user);
+        })
+        .catch((err) => {
+          console.error(
+            "Erreur lors de la mise à jour des photos de l'utilisateur ",
+            err
+          );
+          return res
+            .status(500)
+            .send("Erreur lors de la mise à jour des photos de l'utilisateur");
+        });
+    } else {
+      res.json({ result: false, error: resultMove });
+    }
+    fs.unlinkSync(photoPath);
+  }
 });
 
 router.put("/information", (req, res) => {
-  const { userId, email, numPhone, password } = req.body;
+  const { userId: token, email, numPhone, password } = req.body;
   const hash = password ? bcrypt.hashSync(req.body.password, 10) : undefined;
 
   // Rechercher l'utilisateur dans la base de données par son nom et prénom
   User.findOneAndUpdate(
-    userId,
+    { token },
     { email, numPhone, password: hash }, // Nouvelles valeurs à mettre à jour
     { new: true } // Option pour retourner le document mis à jour
   )
@@ -67,12 +97,12 @@ router.put("/information", (req, res) => {
 });
 
 router.put("/profil", (req, res) => {
-  const { userId, city, aPropos, description, numPhone, password, email } =
+  const { token, city, aPropos, description, numPhone, password, email } =
     req.body;
 
   // Mettre à jour les champs localisation, à propos et description pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    userId,
+    token,
     { city, aPropos, description, numPhone, password, email }, // Nouvelles valeurs à mettre à jour
     { new: true } // Option pour retourner le document mis à jour
   )
