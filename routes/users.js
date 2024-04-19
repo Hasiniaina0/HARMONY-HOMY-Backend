@@ -171,5 +171,22 @@ router.get("/:token", async (req, res) => {
     });
   }
 });
+router.get("/token/:token", async (req, res) => {
+  const token = req.params.token;
+
+  try {
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.json({ message: "Utilisateur non trouvé" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.json({
+      message:
+        "Erreur lors de la récupération des informations de l'utilisateur",
+    });
+  }
+});
 
 module.exports = router;

@@ -84,4 +84,26 @@ router.post("/message", async (req, res) => {
   res.json({ result: true });
 });
 
+// récupérer tous les messages
+router.get("/messages/:token", async (req, res) => {
+  const token = req.params.token;
+  const user = User.findOne({ token });
+
+  if (!user) {
+    return res.status(404).json({ message: "Utilisateur non trouvé" });
+  }
+
+  //obtenir tous les messages échangés
+  const messages = user.chat;
+
+  // Répondre avec une réponse JSON contenant tous les messages récupérés
+  res.status(200).json(messages);
+});
+//   .catch((error) => {
+//     console.error("Erreur lors de la recherche de l'utilisateur :", error);
+//     res.status(500).json({
+//       message: "Erreur serveur lors de la recherche de l'utilisateur",
+//     });
+//   });
+
 module.exports = router;
