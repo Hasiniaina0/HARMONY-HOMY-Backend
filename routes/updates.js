@@ -102,7 +102,7 @@ router.put("/profil", (req, res) => {
 
   // Mettre à jour les champs localisation, à propos et description pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    token,
+    { token },
     { city, aPropos, description, numPhone, password, email }, // Nouvelles valeurs à mettre à jour
     { new: true } // Option pour retourner le document mis à jour
   )
