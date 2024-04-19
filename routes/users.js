@@ -109,7 +109,7 @@ router.get("/hebergeur", async (req, res) => {
       description: 1,
       aPropos: 1,
       dateNaissance: 1,
-      photo: 1,
+      photos: 1,
     })
     .then((data) => {
       res.json(data);
@@ -132,7 +132,7 @@ router.get("/locataire", async (req, res) => {
       description: 1,
       aPropos: 1,
       dateNaissance: 1,
-      photo: 1,
+      photos: 1,
     })
     .then((data) => {
       res.json(data);
