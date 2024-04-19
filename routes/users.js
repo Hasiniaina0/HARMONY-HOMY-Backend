@@ -42,6 +42,24 @@ router.post("/signup", (req, res) => {
         password: hash,
         confirmPassword: hash,
         token: uid2(32),
+        aPropos: "",
+        description: "",
+        dateNaissance: null,
+        city: "",
+        photos: [],
+        option: {
+          citySearch: "",
+          accommodationType: "",
+          duration: "",
+          smoke: false,
+          animals: false,
+          visit: false,
+          car: false,
+          pool: false,
+          prmAccess: false,
+          garden: false,
+          balcon: false,
+        },
       });
 
       newUser.save().then((newDoc) => {
@@ -126,21 +144,16 @@ router.get("/locataire", async (req, res) => {
 });
 
 // Route pour récupérer les informations de l'utilisateur par ID
-router.get("/:userId", async (req, res) => {
-  const userId = req.params.userId;
+router.get("/:token", async (req, res) => {
+  const token = req.params.token;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ token });
     if (!user) {
       return res.json({ message: "Utilisateur non trouvé" });
     }
-    // Retourner uniquement les informations nécessaires de l'utilisateur
-    const data = {
-      prenom: user.prenom,
-      description: user.description,
-      aPropos: user.aPropos,
-    };
-    res.json(data);
+
+    res.json(user);
   } catch (error) {
     console.error(error);
     res.json({

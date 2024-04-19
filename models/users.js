@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
   options: optionSchema,
   nom: String,
   prenom: String,
-  dateNaissance: Date,
+  dateNaissance: Date || null,
   email: String,
   numPhone: Number,
   token: String,
