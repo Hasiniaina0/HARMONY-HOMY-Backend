@@ -42,6 +42,24 @@ router.post("/signup", (req, res) => {
         password: hash,
         confirmPassword: hash,
         token: uid2(32),
+        aPropos: "",
+        description: "",
+        dateNaissance: null,
+        city: "",
+        photos: [],
+        option: {
+          citySearch: "",
+          accommodationType: "",
+          duration: "",
+          smoke: false,
+          animals: false,
+          visit: false,
+          car: false,
+          pool: false,
+          prmAccess: false,
+          garden: false,
+          balcon: false,
+        },
       });
 
       newUser.save().then((newDoc) => {
@@ -85,6 +103,7 @@ router.get("/hebergeur", async (req, res) => {
   // Utilisez une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
   User.find({ statut: "hebergeur" })
     .select({
+      token: 1,
       prenom: 1,
       city: 1,
       description: 1,
@@ -107,6 +126,7 @@ router.get("/locataire", async (req, res) => {
   // Utilisez une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
   User.find({ statut: "locataire" })
     .select({
+      token: 1,
       prenom: 1,
       city: 1,
       description: 1,
@@ -125,22 +145,24 @@ router.get("/locataire", async (req, res) => {
     });
 });
 
-// Route pour récupérer les informations de l'utilisateur par ID
-router.get("/:userId", async (req, res) => {
-  const userId = req.params.userId;
+// Route pour récupérer les informations de l'utilisateur par token
+router.get("/:token", async (req, res) => {
+  const token = req.params.token;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ token });
     if (!user) {
       return res.json({ message: "Utilisateur non trouvé" });
     }
     // Retourner uniquement les informations nécessaires de l'utilisateur
-    const data = {
+    const userDetails = {
       prenom: user.prenom,
       description: user.description,
       aPropos: user.aPropos,
+      city: user.city,
+      photos: user.photos,
     };
-    res.json(data);
+    res.json(userDetails);
   } catch (error) {
     console.error(error);
     res.json({
