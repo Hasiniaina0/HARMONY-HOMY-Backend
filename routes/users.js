@@ -160,6 +160,7 @@ router.get("/:token", async (req, res) => {
       description: user.description,
       aPropos: user.aPropos,
       city: user.city,
+      photos: user.photos,
     };
     res.json(userDetails);
   } catch (error) {
