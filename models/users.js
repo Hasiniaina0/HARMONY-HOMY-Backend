@@ -28,6 +28,11 @@ const userSchema = mongoose.Schema({
   statut: String,
   photos: [String],
   city: String,
+
+  chat: {
+    message: String,
+    date: Date,
+  },
 });
 
 const User = mongoose.model("users", userSchema);

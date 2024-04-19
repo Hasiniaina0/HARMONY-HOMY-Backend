@@ -51,6 +51,7 @@ router.post("/signup", (req, res) => {
           token: newDoc.token,
           email: newDoc.email,
           statut: newDoc.statut,
+          name: newDoc.nom,
         });
       });
     } else {
@@ -73,6 +74,7 @@ router.post("/signin", (req, res) => {
         token: data.token,
         email: data.email,
         statut: data.statut,
+        name: data.nom,
       });
     } else {
       res.json({ result: false, error: "User not found or wrong password" });
@@ -171,7 +173,10 @@ router.get("/:token", async (req, res) => {
     res.json(userDetails);
   } catch (error) {
     console.error(error);
-    res.json({ message: "Erreur lors de la récupération des informations de l'utilisateur" });
+    res.json({
+      message:
+        "Erreur lors de la récupération des informations de l'utilisateur",
+    });
   }
 });
 
