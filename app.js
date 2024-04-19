@@ -6,6 +6,7 @@ var logger = require("morgan");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var updatesRouter = require("./routes/updates");
+var chatRouter = require("./routes/chat");
 
 var app = express();
 const fileUpload = require("express-fileupload");
@@ -21,5 +22,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/updates", updatesRouter);
+app.use("/chat", chatRouter);
 
 module.exports = app;
