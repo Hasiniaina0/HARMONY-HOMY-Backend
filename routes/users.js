@@ -47,7 +47,7 @@ router.post("/signup", (req, res) => {
         dateNaissance: null,
         city: "",
         photos: [],
-        option: {
+        options: {
           citySearch: "",
           accommodationType: "",
           duration: "",

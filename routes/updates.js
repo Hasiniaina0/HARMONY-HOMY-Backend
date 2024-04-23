@@ -125,8 +125,8 @@ router.put("/profil", (req, res) => {
 });
 router.put("/options", (req, res) => {
   const {
-    userId,
-    city,
+    token,
+    citySearch,
     accommodationType,
     duration,
     smoke,
@@ -139,9 +139,9 @@ router.put("/options", (req, res) => {
 
   // Mettre à jour les champs pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
-    { _id: userId }, // Critère de mise à jour
+    { token }, // Critère de mise à jour
     {
-      city,
+      citySearch,
       accommodationType,
       duration,
       smoke,
