@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
   aPropos: String,
   description: String,
   statut: String,
-  photoProfil: [String],
+  photoProfil: String,
   photos: [String],
   city: String,
 
