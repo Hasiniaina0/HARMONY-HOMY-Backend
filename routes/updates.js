@@ -107,9 +107,8 @@ router.post("/photoProfil/:token", async (req, res) => {
   }
 });
 
-
 router.put("/information", (req, res) => {
-  const { userId: token, email, numPhone, password } = req.body;
+  const { token, email, numPhone, password } = req.body;
   const hash = password ? bcrypt.hashSync(req.body.password, 10) : undefined;
 
   // Rechercher l'utilisateur dans la base de données par son nom et prénom
@@ -173,7 +172,6 @@ router.put("/profil", (req, res) => {
       res.status(500).json({ error: "Erreur interne du serveur." }); // Envoyer la réponse
     });
 });
-
 
 router.put("/options", (req, res) => {
   const {

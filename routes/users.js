@@ -69,7 +69,8 @@ router.post("/signup", (req, res) => {
           token: newDoc.token,
           email: newDoc.email,
           statut: newDoc.statut,
-          name: newDoc.nom,
+          nom: newDoc.nom,
+          prenom: newDoc.prenom,
         });
       });
     } else {
@@ -92,7 +93,8 @@ router.post("/signin", (req, res) => {
         token: data.token,
         email: data.email,
         statut: data.statut,
-        name: data.nom,
+        nom: data.nom,
+        prenom: data.prenom,
       });
     } else {
       res.json({ result: false, error: "User not found or wrong password" });
@@ -111,7 +113,7 @@ router.get("/hebergeur", async (req, res) => {
       aPropos: 1,
       dateNaissance: 1,
       photos: 1,
-      photoProfil:1,
+      photoProfil: 1,
     })
     .then((data) => {
       res.json(data);
@@ -135,7 +137,7 @@ router.get("/locataire", async (req, res) => {
       aPropos: 1,
       dateNaissance: 1,
       photos: 1,
-      photoProfil:1,
+      photoProfil: 1,
     })
     .then((data) => {
       res.json(data);
