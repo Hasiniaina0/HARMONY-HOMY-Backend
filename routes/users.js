@@ -111,6 +111,7 @@ router.get("/hebergeur", async (req, res) => {
       aPropos: 1,
       dateNaissance: 1,
       photos: 1,
+      photoProfil:1,
     })
     .then((data) => {
       res.json(data);
@@ -134,6 +135,7 @@ router.get("/locataire", async (req, res) => {
       aPropos: 1,
       dateNaissance: 1,
       photos: 1,
+      photoProfil:1,
     })
     .then((data) => {
       res.json(data);
@@ -162,6 +164,7 @@ router.get("/:token", async (req, res) => {
       aPropos: user.aPropos,
       city: user.city,
       photos: user.photos,
+      photoProfil: user.photoProfil,
     };
     res.json(userDetails);
   } catch (error) {

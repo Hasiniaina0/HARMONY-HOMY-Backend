@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Définition du schéma des options
 const optionSchema = mongoose.Schema({
   citySearch: String,
   accommodationType: String,
@@ -29,11 +30,6 @@ const userSchema = mongoose.Schema({
   photoProfil: String,
   photos: [String],
   city: String,
-
-  chat: {
-    message: String,
-    date: Date,
-  },
 });
 
 const User = mongoose.model("users", userSchema);
