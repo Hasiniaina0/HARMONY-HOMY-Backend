@@ -186,7 +186,32 @@ router.get("/token/:token", async (req, res) => {
       message:
         "Erreur lors de la récupération des informations de l'utilisateur",
     });
+=======
+>>>>>>> Stashed changes
   }
 });
+
+// router.get("/getuser", async (req, res) => {
+//   const {token} = req.params;
+//     User.findOne({ token })
+//       .select({
+//       email: 1,
+//       numPhone: 1,
+//       city: 1,
+//       description: 1,
+//       aPropos: 1,
+//       dateNaissance: 1,
+//       photo: 1,
+//     })
+//     .then((data) => {
+//       res.json(data);
+//     })
+//     .catch((error) => {
+//       console.error(error);
+//       res
+//         .status(500)
+//         .json({ message: "Erreur lors de la récupération du profil" });
+//     });
+// });
 
 module.exports = router;
