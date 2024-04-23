@@ -10,7 +10,6 @@ const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 
 // envoyer les photos sur cloudinary
-
 router.post("/photos/:token", async (req, res) => {
   console.log(req.files);
   const files = req.files;
@@ -59,6 +58,56 @@ router.post("/photos/:token", async (req, res) => {
   }
 });
 
+// envoyer la photo de profil sur cloudinary
+router.post("/photoProfil/:token", async (req, res) => {
+  console.log(req.files);
+  const files = req.files;
+  const photoProfil = [];
+  for (const photo in files) {
+    console.log("photo de profil:", photo);
+    const photoPath = `./tmp/${uniqid()}.jpg`;
+    const resultMove = await files[photo].mv(photoPath);
+
+    if (!resultMove) {
+      const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+      photoProfil.push(resultCloudinary.secure_url);
+      User.findOneAndUpdate(
+        { token: req.params.token },
+        { photoProfil }, // Nouvelles valeurs à mettre à jour
+        { new: true } // Option pour retourner le document mis à jour
+      )
+        .then((user) => {
+          if (!user) {
+            console.error(
+              "Erreur lors de la mise à jour des photos de l'utilisateur : utilisateur non trouvé"
+            );
+            return res
+              .status(500)
+              .send(
+                "Erreur lors de la mise à jour des photos de l'utilisateur: utilisateur non trouvé"
+              );
+          }
+
+          // Répondre avec un statut de réussite
+          res.status(200).json(user);
+        })
+        .catch((err) => {
+          console.error(
+            "Erreur lors de la mise à jour des photos de l'utilisateur ",
+            err
+          );
+          return res
+            .status(500)
+            .send("Erreur lors de la mise à jour des photos de l'utilisateur");
+        });
+    } else {
+      res.json({ result: false, error: resultMove });
+    }
+    fs.unlinkSync(photoPath);
+  }
+});
+
+
 router.put("/information", (req, res) => {
   const { userId: token, email, numPhone, password } = req.body;
   const hash = password ? bcrypt.hashSync(req.body.password, 10) : undefined;
@@ -96,6 +145,7 @@ router.put("/information", (req, res) => {
     });
 });
 
+//Récupération du profil utilisateur
 router.put("/profil", (req, res) => {
   const { token, city, aPropos, description } = req.body;
 
@@ -123,6 +173,8 @@ router.put("/profil", (req, res) => {
       res.status(500).json({ error: "Erreur interne du serveur." }); // Envoyer la réponse
     });
 });
+
+
 router.put("/options", (req, res) => {
   const {
     token,
