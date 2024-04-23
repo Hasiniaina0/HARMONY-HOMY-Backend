@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 require("../models/connection");
-const User = require("../models/users");
+
+const Chat = require("../models/chat");
 
 const Pusher = require("pusher");
 const pusher = new Pusher({
@@ -16,6 +17,29 @@ const uniqid = require("uniqid");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 
+// Création du chat
+router.post("/create", (req, res) => {
+  const { tokens } = req.body;
+  Users.find({ token: tokens[0] || tokens[1] }).then((users) => {
+    const userIds = users.map((user) => user._id);
+    const newChat = new Chat({
+      messages: [],
+      users: userIds,
+    });
+    newChat.save().then((savedChat) => {
+      if (savedChat) {
+        pusher.trigger("chat", "join", { tokens });
+        return { result: true, message: "chat enregistré", savedChat };
+      } else {
+        return res.json({
+          result: false,
+          message: "error lors de l'enregistrement du message",
+        });
+      }
+    });
+  });
+});
+
 // Rejoindre le chat
 router.put("/:token", (req, res) => {
   const token = req.params.token;
@@ -25,7 +49,7 @@ router.put("/:token", (req, res) => {
         return res.status(404).json({ message: "Utilisateur non trouvé" });
       }
       // Trigger Pusher que si l'utilisateur est trouvé
-      pusher.trigger("chat", "join", { token });
+      pusher.trigger("chat", "message", { token });
 
       res.json({ result: true });
     })
@@ -58,30 +82,66 @@ router.delete("/:token", (req, res) => {
 });
 
 // Envoyer un message
-router.post("/message", async (req, res) => {
-  const message = req.body;
-  // ajouter la date au msg
-  message.date = new Date();
+router.post("/:chatId/messages", async (req, res) => {
+  const { chatId } = req.params;
+  const { text, type, nom } = req.body;
 
-  if (message.type === "audio") {
+  const messageData = {
+    text,
+    nom,
+    createdAt: new Date(),
+  };
+
+  if (type === "audio" && req.files && req.files.audio) {
     const audioPath = `./tmp/${uniqid()}.m4a`;
-    const resultMove = await req.files.audio.mv(audioPath);
+    const moveResult = await req.files.audio.mv(audioPath);
 
-    if (!resultMove) {
-      const resultCloudinary = await cloudinary.uploader.upload(audioPath, {
-        resource_type: "video",
-      });
-      message.url = resultCloudinary.secure_url;
-      fs.unlinkSync(audioPath);
-    } else {
-      res.json({ result: false, error: resultMove });
+    if (moveResult) {
+      res.status(500).json({ result: false, error: moveResult });
       return;
     }
+
+    const cloudinaryResult = await cloudinary.uploader.upload(audioPath, {
+      resource_type: "video",
+    });
+    messageData.url = cloudinaryResult.secure_url;
+    fs.unlinkSync(audioPath);
   }
 
-  pusher.trigger("chat", "message", message);
+  const chat = await Chat.findById(chatId);
 
-  res.json({ result: true });
+  if (!chat) {
+    res.status(404).json({ result: false, message: "Chat non trouvé" });
+    return;
+  }
+
+  chat.messages.push(messageData);
+
+  chat
+    .save()
+    .then((savedChat) => {
+      if (savedChat) {
+        // Déclencher un événement Pusher sur le canal de ce chat
+        pusher.trigger(`chat_${chatId}`, "message", messageData);
+
+        res.json({
+          result: true,
+          message: "Message envoyé et sauvegardé",
+          savedChat,
+        });
+      } else {
+        res
+          .status(500)
+          .json({
+            result: false,
+            message: "Erreur lors de l'enregistrement du message",
+          });
+      }
+    })
+    .catch((error) => {
+      console.error("Erreur lors de la sauvegarde du message :", error);
+      res.status(500).json({ result: false, error: error.message });
+    });
 });
 
 // récupérer tous les messages

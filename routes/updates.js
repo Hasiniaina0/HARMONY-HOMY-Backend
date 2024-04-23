@@ -97,8 +97,7 @@ router.put("/information", (req, res) => {
 });
 
 router.put("/profil", (req, res) => {
-  const { token, city, aPropos, description, numPhone, password, email } =
-    req.body;
+  const { token, city, aPropos, description } = req.body;
 
   // Mettre à jour les champs localisation, à propos et description pour tous les utilisateurs avec le même nom et prénom
   User.findOneAndUpdate(
@@ -109,24 +108,19 @@ router.put("/profil", (req, res) => {
     .then((user) => {
       if (!user) {
         console.error(
-          "Erreur lors de la mise à jour du profil de l'utilisateur :"
+          "Utilisateur non trouvé lors de la mise à jour du profil."
         );
-        return res
-          .status(500)
-          .send("Erreur lors de la mise à jour du profil de l'utilisateur");
+        // Envoyer une réponse et quitter la fonction
+        res.status(404).json({ error: "Utilisateur non trouvé." });
+        return; // Ce "return" est important pour éviter les doubles réponses
       }
 
-      // Répondre avec un statut de réussite
-      res.status(200).json(user);
+      // Si la mise à jour réussit, renvoyer l'utilisateur mis à jour
+      res.status(200).json(user); // Envoyer la réponse
     })
     .catch((err) => {
-      console.error(
-        "Erreur lors de la mise à jour du profil de l'utilisateur :",
-        err
-      );
-      return res
-        .status(500)
-        .send("Erreur lors de la mise à jour du profil de l'utilisateur");
+      console.error("Erreur lors de la mise à jour du profil :", err);
+      res.status(500).json({ error: "Erreur interne du serveur." }); // Envoyer la réponse
     });
 });
 router.put("/options", (req, res) => {
