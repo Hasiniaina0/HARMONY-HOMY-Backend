@@ -46,6 +46,7 @@ router.post("/signup", (req, res) => {
         description: "",
         dateNaissance: null,
         city: "",
+        photoProfil: "",
         photos: [],
         options: {
           citySearch: "",
@@ -186,8 +187,6 @@ router.get("/token/:token", async (req, res) => {
       message:
         "Erreur lors de la récupération des informations de l'utilisateur",
     });
-=======
->>>>>>> Stashed changes
   }
 });
 
