@@ -48,6 +48,7 @@ router.post("/signup", (req, res) => {
         city: "",
         photoProfil: "",
         photos: [],
+        available: req.body.available,
         options: {
           citySearch: "",
           accommodationType: "",
@@ -167,6 +168,7 @@ router.get("/:token", async (req, res) => {
       city: user.city,
       photos: user.photos,
       photoProfil: user.photoProfil,
+      available: user.available,
     };
     res.json(userDetails);
   } catch (error) {
