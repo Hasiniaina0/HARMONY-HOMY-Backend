@@ -22,40 +22,44 @@ router.post("/photos/:token", async (req, res) => {
     if (!resultMove) {
       const resultCloudinary = await cloudinary.uploader.upload(photoPath);
       photos.push(resultCloudinary.secure_url);
-      User.findOneAndUpdate(
-        { token: req.params.token },
-        { photos }, // Nouvelles valeurs à mettre à jour
-        { new: true } // Option pour retourner le document mis à jour
-      )
-        .then((user) => {
-          if (!user) {
-            console.error(
-              "Erreur lors de la mise à jour des photos de l'utilisateur : utilisateur non trouvé"
-            );
-            return res
-              .status(500)
-              .send(
-                "Erreur lors de la mise à jour des photos de l'utilisateur: utilisateur non trouvé"
-              );
-          }
-
-          // Répondre avec un statut de réussite
-          res.status(200).json(user);
-        })
-        .catch((err) => {
-          console.error(
-            "Erreur lors de la mise à jour des photos de l'utilisateur ",
-            err
-          );
-          return res
-            .status(500)
-            .send("Erreur lors de la mise à jour des photos de l'utilisateur");
-        });
     } else {
       res.json({ result: false, error: resultMove });
     }
-    fs.unlinkSync(photoPath);
   }
+
+  if (photos.length === 0)
+    res.json({ result: false, error: "pas de photos à mettre à jour" });
+
+  User.findOneAndUpdate(
+    { token: req.params.token },
+    { photos }, // Nouvelles valeurs à mettre à jour
+    { new: true } // Option pour retourner le document mis à jour
+  )
+    .then((user) => {
+      if (!user) {
+        console.error(
+          "Erreur lors de la mise à jour des photos de l'utilisateur : utilisateur non trouvé"
+        );
+        return res
+          .status(500)
+          .send(
+            "Erreur lors de la mise à jour des photos de l'utilisateur: utilisateur non trouvé"
+          );
+      }
+
+      // Répondre avec un statut de réussite
+      res.status(200).json(user);
+    })
+    .catch((err) => {
+      console.error(
+        "Erreur lors de la mise à jour des photos de l'utilisateur ",
+        err
+      );
+      return res
+        .status(500)
+        .send("Erreur lors de la mise à jour des photos de l'utilisateur");
+    });
+  // fs.unlinkSync(photoPath);
 });
 
 // envoyer la photo de profil sur cloudinary
@@ -71,40 +75,40 @@ router.post("/photoProfil/:token", async (req, res) => {
     if (!resultMove) {
       const resultCloudinary = await cloudinary.uploader.upload(photoPath);
       photoProfil.push(resultCloudinary.secure_url);
-      User.findOneAndUpdate(
-        { token: req.params.token },
-        { photoProfil }, // Nouvelles valeurs à mettre à jour
-        { new: true } // Option pour retourner le document mis à jour
-      )
-        .then((user) => {
-          if (!user) {
-            console.error(
-              "Erreur lors de la mise à jour des photos de l'utilisateur : utilisateur non trouvé"
-            );
-            return res
-              .status(500)
-              .send(
-                "Erreur lors de la mise à jour des photos de l'utilisateur: utilisateur non trouvé"
-              );
-          }
-
-          // Répondre avec un statut de réussite
-          res.status(200).json(user);
-        })
-        .catch((err) => {
-          console.error(
-            "Erreur lors de la mise à jour des photos de l'utilisateur ",
-            err
-          );
-          return res
-            .status(500)
-            .send("Erreur lors de la mise à jour des photos de l'utilisateur");
-        });
-    } else {
-      res.json({ result: false, error: resultMove });
     }
-    fs.unlinkSync(photoPath);
   }
+  if (photoProfil.length === 0)
+    res.json({ result: false, error: "pas de photos à mettre à jour" });
+  User.findOneAndUpdate(
+    { token: req.params.token },
+    { photoProfil }, // Nouvelles valeurs à mettre à jour
+    { new: true } // Option pour retourner le document mis à jour
+  )
+    .then((user) => {
+      if (!user) {
+        console.error(
+          "Erreur lors de la mise à jour des photos de l'utilisateur : utilisateur non trouvé"
+        );
+        return res
+          .status(500)
+          .send(
+            "Erreur lors de la mise à jour des photos de l'utilisateur: utilisateur non trouvé"
+          );
+      }
+
+      // Répondre avec un statut de réussite
+      res.status(200).json(user);
+    })
+    .catch((err) => {
+      console.error(
+        "Erreur lors de la mise à jour des photos de l'utilisateur ",
+        err
+      );
+      return res
+        .status(500)
+        .send("Erreur lors de la mise à jour des photos de l'utilisateur");
+    });
+  // fs.unlinkSync(photoPath);
 });
 
 router.put("/information", (req, res) => {
