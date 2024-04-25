@@ -1,3 +1,6 @@
+
+
+
 var express = require("express");
 var router = express.Router();
 var User = require("../models/users");
@@ -13,26 +16,38 @@ const fs = require("fs");
 router.post("/photos/:token", async (req, res) => {
   console.log(req.files);
   const files = req.files;
-  const photos = [];
+  const allPhotos = [];
+  let hasPhotoProfil = false;
+
   for (const photo in files) {
     console.log("photo:", photo);
+    if(photo==="photoProfil") hasPhotoProfil = true
+
     const photoPath = `./tmp/${uniqid()}.jpg`;
     const resultMove = await files[photo].mv(photoPath);
 
     if (!resultMove) {
       const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-      photos.push(resultCloudinary.secure_url);
+      allPhotos.push(resultCloudinary.secure_url);
     } else {
       res.json({ result: false, error: resultMove });
     }
   }
 
-  if (photos.length === 0)
+  if (allPhotos.length === 0)
     res.json({ result: false, error: "pas de photos à mettre à jour" });
+  
+  const photoProfil= allPhotos.slice(-1);
+  const photos = hasPhotoProfil?allPhotos.slice(0,-1):allPhotos;
+  const dataToUpdate = {};
+  if (hasPhotoProfil) dataToUpdate.photoProfil = photoProfil;
+  if(photos.length>0) dataToUpdate.photos = photos;
 
+  
   User.findOneAndUpdate(
     { token: req.params.token },
-    { photos }, // Nouvelles valeurs à mettre à jour
+    dataToUpdate, // Nouvelles valeurs à mettre à jour
+    
     { new: true } // Option pour retourner le document mis à jour
   )
     .then((user) => {
@@ -64,6 +79,7 @@ router.post("/photos/:token", async (req, res) => {
 
 // envoyer la photo de profil sur cloudinary
 router.post("/photoProfil/:token", async (req, res) => {
+  console.log("*******************************called************");
   console.log(req.files);
   const files = req.files;
   const photoProfil = [];
