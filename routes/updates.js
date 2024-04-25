@@ -70,7 +70,7 @@ router.post("/photos/:token", async (req, res) => {
         .status(500)
         .send("Erreur lors de la mise à jour des photos de l'utilisateur");
     });
-  fs.unlinkSync(photoPath);
+  //fs.unlinkSync(photoPath);
 });
 
 // envoyer la photo de profil sur cloudinary
