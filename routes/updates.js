@@ -1,6 +1,3 @@
-
-
-
 var express = require("express");
 var router = express.Router();
 var User = require("../models/users");
@@ -21,7 +18,7 @@ router.post("/photos/:token", async (req, res) => {
 
   for (const photo in files) {
     console.log("photo:", photo);
-    if(photo==="photoProfil") hasPhotoProfil = true
+    if (photo === "photoProfil") hasPhotoProfil = true;
 
     const photoPath = `./tmp/${uniqid()}.jpg`;
     const resultMove = await files[photo].mv(photoPath);
@@ -36,18 +33,17 @@ router.post("/photos/:token", async (req, res) => {
 
   if (allPhotos.length === 0)
     res.json({ result: false, error: "pas de photos à mettre à jour" });
-  
-  const photoProfil= allPhotos.slice(-1);
-  const photos = hasPhotoProfil?allPhotos.slice(0,-1):allPhotos;
+
+  const photoProfil = allPhotos.slice(-1);
+  const photos = hasPhotoProfil ? allPhotos.slice(0, -1) : allPhotos;
   const dataToUpdate = {};
   if (hasPhotoProfil) dataToUpdate.photoProfil = photoProfil;
-  if(photos.length>0) dataToUpdate.photos = photos;
+  if (photos.length > 0) dataToUpdate.photos = photos;
 
-  
   User.findOneAndUpdate(
     { token: req.params.token },
     dataToUpdate, // Nouvelles valeurs à mettre à jour
-    
+
     { new: true } // Option pour retourner le document mis à jour
   )
     .then((user) => {
@@ -74,7 +70,7 @@ router.post("/photos/:token", async (req, res) => {
         .status(500)
         .send("Erreur lors de la mise à jour des photos de l'utilisateur");
     });
-  // fs.unlinkSync(photoPath);
+  fs.unlinkSync(photoPath);
 });
 
 // envoyer la photo de profil sur cloudinary
@@ -124,7 +120,7 @@ router.post("/photoProfil/:token", async (req, res) => {
         .status(500)
         .send("Erreur lors de la mise à jour des photos de l'utilisateur");
     });
-  // fs.unlinkSync(photoPath);
+  fs.unlinkSync(photoPath);
 });
 
 router.put("/information", (req, res) => {
