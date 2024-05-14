@@ -92,7 +92,7 @@ router.post("/signin", (req, res) => {
       res.json({
         result: true,
         token: data.token,
-        email: data.email,
+        email: data.email, 
         statut: data.statut,
         nom: data.nom,
         prenom: data.prenom,
