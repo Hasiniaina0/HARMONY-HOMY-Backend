@@ -29,7 +29,7 @@ router.post("/signup", (req, res) => {
   }
 
   // vérifier si l'utilisateur est enregistré en BDD
-  User.findOne({ nom: req.body.nom }).then((data) => {
+  User.findOne({ email: req.body.email }).then((data) => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
