@@ -22,13 +22,13 @@ router.post("/signup", (req, res) => {
     return;
   }
 
-  // Check if password and confirmPassword match
+  // vérifier si le mdp est conforme
   if (req.body.password !== req.body.confirmPassword) {
     res.json({ result: false, error: "Passwords do not match" });
     return;
   }
 
-  // Check if the user has not already been registered
+  // vérifier si l'utilisateur est enregistré en BDD
   User.findOne({ nom: req.body.nom }).then((data) => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
@@ -75,7 +75,7 @@ router.post("/signup", (req, res) => {
         });
       });
     } else {
-      // User already exists in database
+      // Si l'utilisateur est déjà en BDD
       res.json({ result: false, error: "User already exists" });
     }
   });
@@ -196,28 +196,5 @@ router.get("/token/:token", async (req, res) => {
     });
   }
 });
-
-// router.get("/getuser", async (req, res) => {
-//   const {token} = req.params;
-//     User.findOne({ token })
-//       .select({
-//       email: 1,
-//       numPhone: 1,
-//       city: 1,
-//       description: 1,
-//       aPropos: 1,
-//       dateNaissance: 1,
-//       photo: 1,
-//     })
-//     .then((data) => {
-//       res.json(data);
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//       res
-//         .status(500)
-//         .json({ message: "Erreur lors de la récupération du profil" });
-//     });
-// });
 
 module.exports = router;
