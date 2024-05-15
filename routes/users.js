@@ -83,7 +83,7 @@ router.post("/signup", (req, res) => {
 
 router.post("/signin", (req, res) => {
   if (!checkBody(req.body, ["email", "password"])) {
-    res.json({ result: false, error: "Missing or empty fields" });
+    res.json({ result: false, error: "Les champs ne peuvent pas être vides" });
     return;
   }
 
@@ -98,7 +98,7 @@ router.post("/signin", (req, res) => {
         prenom: data.prenom,
       });
     } else {
-      res.json({ result: false, error: "User not found or wrong password" });
+      res.json({ result: false, error: "Utilisateur non trouvé ou mot de passe incorrect" });
     }
   });
 });
