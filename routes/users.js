@@ -7,7 +7,7 @@ const { checkBody } = require("../modules/checkBody");
 const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
   if (
     !checkBody(req.body, [
       "nom",
@@ -18,19 +18,19 @@ router.post("/signup", (req, res) => {
       "statut",
     ])
   ) {
-    res.json({ result: false, error: "Missing or empty fields" });
-    return;
+    // Si un champ est manquant ou vide, on renvoie une réponse d'erreur
+    return res.json({ result: false, error: "Missing or empty fields" });
   }
 
   // vérifier si le mdp est conforme
   if (req.body.password !== req.body.confirmPassword) {
-    res.json({ result: false, error: "Passwords do not match" });
-    return;
+    return res.json({ result: false, error: "Passwords do not match" });
   }
 
-  // vérifier si l'utilisateur est enregistré en BDD
-  User.findOne({ email: req.body.email }).then((data) => {
-    if (data === null) {
+  try {
+    // vérifier si l'utilisateur est enregistré en BDD
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (!existingUser) {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
       const newUser = new User({
@@ -64,47 +64,59 @@ router.post("/signup", (req, res) => {
         },
       });
 
-      newUser.save().then((newDoc) => {
-        res.json({
-          result: true,
-          token: newDoc.token,
-          email: newDoc.email,
-          statut: newDoc.statut,
-          nom: newDoc.nom,
-          prenom: newDoc.prenom,
-        });
+      // Sauvegarder le nouvel utilisateur dans la base de données
+      const newDoc = await newUser.save();
+      // Répondre avec succès et les informations nécessaires
+      res.json({
+        result: true,
+        token: newDoc.token,
+        email: newDoc.email,
+        statut: newDoc.statut,
+        nom: newDoc.nom,
+        prenom: newDoc.prenom,
       });
     } else {
       // Si l'utilisateur est déjà en BDD
       res.json({ result: false, error: "User already exists" });
     }
-  });
+  } catch (error) {
+    //Gestion des erreurs
+    res.json({ result: false, error: "Servor error" });
+  }
 });
 
-router.post("/signin", (req, res) => {
+router.post("/signin", async (req, res) => {
   if (!checkBody(req.body, ["email", "password"])) {
-    res.json({ result: false, error: "Les champs ne peuvent pas être vides" });
-    return;
+    return res.json({
+      result: false,
+      error: "Les champs ne peuvent pas être vides",
+    });
   }
 
-  User.findOne({ email: req.body.email }).then((data) => {
-    if (data && bcrypt.compareSync(req.body.password, data.password)) {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user && bcrypt.compareSync(req.body.password, user.password)) {
       res.json({
         result: true,
         token: data.token,
-        email: data.email, 
+        email: data.email,
         statut: data.statut,
         nom: data.nom,
         prenom: data.prenom,
       });
     } else {
-      res.json({ result: false, error: "Utilisateur non trouvé ou mot de passe incorrect" });
+      res.json({
+        result: false,
+        error: "Utilisateur non trouvé ou mot de passe incorrect",
+      });
     }
-  });
+  } catch (error) {
+    return res.json({ result: false, error: "Server error" });
+  }
 });
 
 router.get("/hebergeur", async (req, res) => {
-  // Utilisez une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
+  // Utiliser une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
   User.find({ statut: "hebergeur" })
     .select({
       token: 1,
@@ -128,7 +140,7 @@ router.get("/hebergeur", async (req, res) => {
 });
 
 router.get("/locataire", async (req, res) => {
-  // Utilisez une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
+  // Utiliser une requête à la base de données pour obtenir les utilisateurs avec le statut "locataire"
   User.find({ statut: "locataire" })
     .select({
       token: 1,
@@ -179,6 +191,7 @@ router.get("/:token", async (req, res) => {
     });
   }
 });
+
 router.get("/token/:token", async (req, res) => {
   const token = req.params.token;
 
