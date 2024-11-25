@@ -30,7 +30,7 @@ const userSchema = mongoose.Schema({
   photoProfil: [String],
   photos: [String],
   city: String,
-  available:String,
+  available: String,
 });
 
 const User = mongoose.model("users", userSchema);
