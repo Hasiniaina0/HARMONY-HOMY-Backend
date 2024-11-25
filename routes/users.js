@@ -98,11 +98,11 @@ router.post("/signin", async (req, res) => {
     if (user && bcrypt.compareSync(req.body.password, user.password)) {
       res.json({
         result: true,
-        token: data.token,
-        email: data.email,
-        statut: data.statut,
-        nom: data.nom,
-        prenom: data.prenom,
+        token: user.token,
+        email: user.email,
+        statut: user.statut,
+        nom: user.nom,
+        prenom: user.prenom,
       });
     } else {
       res.json({
