@@ -117,8 +117,8 @@ router.post("/signin", async (req, res) => {
 
 router.get("/hebergeur", async (req, res) => {
   // Utiliser une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
-  User.find({ statut: "hebergeur" })
-    .select({
+  try {
+    const data = await User.find({ statut: "hebergeur" }).select({
       token: 1,
       prenom: 1,
       city: 1,
@@ -127,22 +127,21 @@ router.get("/hebergeur", async (req, res) => {
       dateNaissance: 1,
       photos: 1,
       photoProfil: 1,
-    })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((error) => {
-      console.error(error);
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la récupération des hébergeurs" });
     });
+
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des hébergeurs" });
+  }
 });
 
 router.get("/locataire", async (req, res) => {
   // Utiliser une requête à la base de données pour obtenir les utilisateurs avec le statut "locataire"
-  User.find({ statut: "locataire" })
-    .select({
+  try {
+    const data = await User.find({ statut: "locataire" }).select({
       token: 1,
       prenom: 1,
       city: 1,
@@ -151,16 +150,15 @@ router.get("/locataire", async (req, res) => {
       dateNaissance: 1,
       photos: 1,
       photoProfil: 1,
-    })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((error) => {
-      console.error(error);
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la récupération des locataires" });
     });
+
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des locataires" });
+  }
 });
 
 // Route pour récupérer les informations de l'utilisateur par token
