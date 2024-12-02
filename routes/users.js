@@ -39,7 +39,7 @@ router.post("/signup", async (req, res) => {
         prenom: req.body.prenom,
         email: req.body.email,
         numPhone: req.body.numPhone,
-        password: hash,
+        password: hash, // hash enregistré à la place de mdp en clair
         confirmPassword: hash,
         token: uid2(32),
         aPropos: "",
@@ -118,6 +118,7 @@ router.post("/signin", async (req, res) => {
 router.get("/hebergeur", async (req, res) => {
   // Utiliser une requête à la base de données pour obtenir les utilisateurs avec le statut "hébergeur"
   try {
+    // Utilisation de `select` pour inclure uniquement les champs nécessaires dans la réponse
     const data = await User.find({ statut: "hebergeur" }).select({
       token: 1,
       prenom: 1,
@@ -141,6 +142,7 @@ router.get("/hebergeur", async (req, res) => {
 router.get("/locataire", async (req, res) => {
   // Utiliser une requête à la base de données pour obtenir les utilisateurs avec le statut "locataire"
   try {
+    // Utilisation de `select` pour inclure uniquement les champs nécessaires dans la réponse
     const data = await User.find({ statut: "locataire" }).select({
       token: 1,
       prenom: 1,
