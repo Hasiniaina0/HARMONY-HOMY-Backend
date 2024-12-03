@@ -97,25 +97,17 @@ router.post("/signin", async (req, res) => {
     //Recherche de l'utilisateur dans la base
     const user = await User.findOne({ email: req.body.email });
 
-    //Vérification du mdp
     if (user && bcrypt.compareSync(req.body.password, user.password)) {
       // Générer un nouveau token pour cet utilisateur
       const newToken = uid2(32);
 
-      // Mettre à jour et sauvegarde le token dans la BDD
+      // Mettre à jour et sauvegarde le token dans la base de donnée
       user.token = newToken;
-      try {
-        await user.save();
-      } catch (saveError) {
-        return res.json({
-          result: false,
-          error: "Erreur lors de la mise à jour du token",
-        });
-      }
+      await user.save();
 
       res.json({
         result: true,
-        token: newToken,
+        token: newToken, // Retourner le nouveau token
         email: user.email,
         statut: user.statut,
         nom: user.nom,
