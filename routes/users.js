@@ -94,11 +94,28 @@ router.post("/signin", async (req, res) => {
   }
 
   try {
+    //Recherche de l'utilisateur dans la base
     const user = await User.findOne({ email: req.body.email });
+
+    //Vérification du mdp
     if (user && bcrypt.compareSync(req.body.password, user.password)) {
+      // Générer un nouveau token pour cet utilisateur
+      const newToken = uid2(32);
+
+      // Mettre à jour et sauvegarde le token dans la BDD
+      user.token = newToken;
+      try {
+        await user.save();
+      } catch (saveError) {
+        return res.json({
+          result: false,
+          error: "Erreur lors de la mise à jour du token",
+        });
+      }
+
       res.json({
         result: true,
-        token: user.token,
+        token: newToken,
         email: user.email,
         statut: user.statut,
         nom: user.nom,
@@ -111,7 +128,7 @@ router.post("/signin", async (req, res) => {
       });
     }
   } catch (error) {
-    return res.json({ result: false, error: "Server error" });
+    return res.json({ result: false, error: "Erreur du serveur" });
   }
 });
 
